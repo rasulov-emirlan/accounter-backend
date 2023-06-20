@@ -42,3 +42,7 @@ func NewOwner(phoneNumber, fullName, username, password string) (Owner, error) {
 		Password:    string(hashedPassword),
 	}, nil
 }
+
+func (o Owner) ComparePassword(password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(o.Password), []byte(password))
+}
