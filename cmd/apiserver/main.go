@@ -7,8 +7,11 @@ import (
 	"syscall"
 
 	"github.com/rasulov-emirlan/esep-backend/config"
+	"github.com/rasulov-emirlan/esep-backend/internal/domains"
+	"github.com/rasulov-emirlan/esep-backend/internal/storage/postgresql"
 	"github.com/rasulov-emirlan/esep-backend/internal/transport/httprest"
 	"github.com/rasulov-emirlan/esep-backend/pkg/logging"
+	"github.com/rasulov-emirlan/esep-backend/pkg/validation"
 )
 
 func main() {
@@ -25,9 +28,20 @@ func main() {
 		panic(err)
 	}
 
-	srvr := httprest.NewServer(cfg.Server.Port)
+	repo, err := postgresql.NewRepositories(ctx, cfg, log)
+	if err != nil {
+		log.Fatal("could not init repositories", logging.Error("err", err))
+	}
+	defer repo.Close()
+
+	doms, err := domains.NewDomainCombiner(domains.CommonDependencies{Log: log, Val: validation.GetValidator()}, domains.AuthDependencies{OwnersRepo: repo.Owners(), SecretKey: []byte(cfg.JWTsecret)})
+	if err != nil {
+		log.Fatal("could not init domains", logging.Error("err", err))
+	}
+
+	srvr := httprest.NewServer(cfg)
 	go func() {
-		if err := srvr.Start(log); err != nil && err != httprest.ErrServerClosed {
+		if err := srvr.Start(log, doms); err != nil && err != httprest.ErrServerClosed {
 			log.Fatal("server start", logging.Error("err", err))
 		}
 	}()

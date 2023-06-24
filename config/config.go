@@ -29,6 +29,8 @@ type (
 		Server          server
 		LoggingFilename string `env:"LOGGING_FILENAME" env-default:""`
 		LogLevel        string `env:"LOG_LEVEL" env-default:"debug"`
+		JWTsecret       string `env:"JWT_SECRET" env-default:"supersecret"`
+		DatabaseURL     string `env:"DATABASE_URL" env-default:"postgres://postgres:postgres@localhost:5432/esep?sslmode=disable"`
 		JeagerURL       string `env:"JAEGER_URL" env-default:"http://localhost:14268/api/traces"`
 		Flags           flags
 
