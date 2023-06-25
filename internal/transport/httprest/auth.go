@@ -1,19 +1,30 @@
 package httprest
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rasulov-emirlan/esep-backend/internal/domains/auth"
+	"github.com/rasulov-emirlan/esep-backend/pkg/validation"
 )
 
 const AuthRefreshCookieName = "refresh_token"
+
+type AuthRefreshRequest struct {
+	RefreshToken string `json:"refreshToken" validate:"required"`
+}
 
 type AuthHandler struct {
 	service auth.Service
 }
 
 func respondErr(ctx echo.Context, code int, err error) error {
+	if code == http.StatusBadRequest {
+		return ctx.JSON(code, echo.Map{
+			"error": validation.GetValidator().Mappify(err),
+		})
+	}
 	return ctx.JSON(code, echo.Map{
 		"error": err.Error(),
 	})
@@ -74,7 +85,17 @@ func (h AuthHandler) Login(ctx echo.Context) error {
 func (h AuthHandler) Refresh(ctx echo.Context) error {
 	refreshToken, err := ctx.Cookie(AuthRefreshCookieName)
 	if err != nil {
-		return respondErr(ctx, http.StatusBadRequest, err)
+		// search for refresh token in request body
+		req := new(AuthRefreshRequest)
+		if err := ctx.Bind(req); err != nil {
+			return respondErr(ctx, http.StatusBadRequest, err)
+		}
+		if ctx.Validate(req) == nil {
+			refreshToken = &http.Cookie{
+				Value: req.RefreshToken,
+			}
+		}
+		return respondErr(ctx, http.StatusBadRequest, errors.New("refresh token is required in cookie or request body"))
 	}
 
 	session, err := h.service.Refresh(ctx.Request().Context(), refreshToken.Value)

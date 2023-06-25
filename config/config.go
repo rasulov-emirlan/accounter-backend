@@ -2,7 +2,9 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -26,13 +28,12 @@ type (
 	}
 
 	Config struct {
-		Server          server
-		LoggingFilename string `env:"LOGGING_FILENAME" env-default:""`
-		LogLevel        string `env:"LOG_LEVEL" env-default:"debug"`
-		JWTsecret       string `env:"JWT_SECRET" env-default:"supersecret"`
-		DatabaseURL     string `env:"DATABASE_URL" env-default:"postgres://postgres:postgres@localhost:5432/esep?sslmode=disable"`
-		JeagerURL       string `env:"JAEGER_URL" env-default:"http://localhost:14268/api/traces"`
-		Flags           flags
+		Server      server
+		LogLevel    string `env:"LOG_LEVEL" env-default:"debug"`
+		JWTsecret   string `env:"JWT_SECRET" env-default:"supersecret"`
+		DatabaseURL string `env:"DATABASE_URL" env-default:"postgres://postgres:postgres@localhost:5432/esep?sslmode=disable"`
+		JeagerURL   string `env:"JAEGER_URL" env-default:"http://localhost:14268/api/traces"`
+		Flags       flags
 
 		Usage func()
 	}
@@ -51,6 +52,7 @@ func LoadConfig() (Config, error) {
 		if err := cleanenv.ReadConfig(cfg.Flags.envFilename, &cfg); err != nil {
 			return Config{}, err
 		}
+		port(&cfg)
 		return cfg, nil
 	}
 
@@ -62,7 +64,14 @@ func LoadConfig() (Config, error) {
 		cfg.LogLevel = "dev"
 	}
 
+	port(&cfg)
 	return cfg, nil
+}
+
+func port(cfg *Config) {
+	// remove : from port
+	cfg.Server.Port = strings.TrimPrefix(cfg.Server.Port, ":")
+	cfg.Server.Port = fmt.Sprintf(":%s", cfg.Server.Port)
 }
 
 func loadFlags() flags {

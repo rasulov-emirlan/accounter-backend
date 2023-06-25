@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  esep-db:
+    image: postgres:14
+    container_name: esep-db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: esep
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  esep-backend:
+    build: .
+    depends_on:
+      - esep-db
+    env_file:
+      - docker.env
+    network_mode: host
+    container_name: esep-backend
+    restart: always
+    command: "--migrate --dev"

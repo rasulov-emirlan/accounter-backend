@@ -4,10 +4,10 @@ import "github.com/golang-jwt/jwt"
 
 type (
 	RegisterInput struct {
-		FullName    string `json:"full_name" validate:"required"`
+		FullName    string `json:"fullName" validate:"required"`
 		Username    string `json:"username" validate:"required,min=6,max=500"`
 		Password    string `json:"password" validate:"required,min=6,max=500"`
-		PhoneNumber string `json:"phone_number" validate:"max=500"`
+		PhoneNumber string `json:"phoneNumber" validate:"max=500"`
 	}
 
 	LoginInput struct {

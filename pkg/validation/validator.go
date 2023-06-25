@@ -2,11 +2,11 @@ package validation
 
 import (
 	"sync"
+	"unicode"
 
-	"github.com/go-playground/locales/en"
+	russian "github.com/go-playground/locales/ru"
 	ut "github.com/go-playground/universal-translator"
 	vLib "github.com/go-playground/validator/v10"
-	ru_translations "github.com/go-playground/validator/v10/translations/ru"
 )
 
 type Validator struct {
@@ -25,10 +25,13 @@ var (
 
 func GetValidator() *Validator {
 	once.Do(func() {
-		uni := ut.New(en.New())
-		trans, _ := uni.GetTranslator("ru")
+		ru := russian.New()
+		uni := ut.New(ru, ru)
+		trans, ok := uni.GetTranslator("ru")
+		if !ok {
+			panic("could not get translator")
+		}
 		v := vLib.New()
-		ru_translations.RegisterDefaultTranslations(v, trans)
 
 		singleton = &Validator{
 			v:     v,
@@ -84,6 +87,27 @@ func (v Validator) UnpackErrors(e error) []string {
 		errs = append(errs, vv.Translate(v.trans))
 	}
 	return errs
+}
+
+func (v Validator) Mappify(e error) map[string]string {
+
+	values, ok := e.(vLib.ValidationErrors)
+	if !ok {
+		return nil
+	}
+
+	res := make(map[string]string)
+
+	for _, vv := range values {
+		key := vv.StructField()
+		if len(key) != 0 {
+			// make first character lower case
+			key = string(unicode.ToLower(rune(key[0]))) + key[1:]
+		}
+		res[key] = vv.Translate(v.trans)
+	}
+
+	return res
 }
 
 func (v Validator) Var(field string, tag string) error {

@@ -54,7 +54,7 @@ func NewService(ownersRepo OwnersRepository, log *logging.Logger, val *validatio
 func (s service) Register(ctx context.Context, input RegisterInput) (Session, error) {
 	defer s.log.Sync()
 
-	o, err := entities.NewOwner(input.FullName, input.Username, input.Password, input.PhoneNumber)
+	o, err := entities.NewOwner(input.PhoneNumber, input.FullName, input.Username, input.Password)
 	if err != nil {
 		s.log.Debug("auth:Register - failed to create owner", logging.String("stage", "validation"), logging.Error("err", err))
 		return Session{}, err

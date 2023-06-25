@@ -10,6 +10,7 @@ import (
 	"github.com/rasulov-emirlan/esep-backend/internal/domains"
 	"github.com/rasulov-emirlan/esep-backend/pkg/health"
 	"github.com/rasulov-emirlan/esep-backend/pkg/logging"
+	"github.com/rasulov-emirlan/esep-backend/pkg/validation"
 )
 
 var (
@@ -39,6 +40,7 @@ func (s *server) Start(log *logging.Logger, doms domains.DomainCombiner) error {
 	router.Use(middleware.AddTrailingSlash())
 	router.Use(middleware.Gzip())
 	router.Use(log.NewEchoMiddleware)
+	router.Validator = validation.GetValidator()
 
 	router.Any(
 		"/health*",
