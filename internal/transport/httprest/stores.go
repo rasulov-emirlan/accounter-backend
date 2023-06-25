@@ -1,20 +1,27 @@
 package httprest
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/rasulov-emirlan/esep-backend/internal/domains/auth"
 	"github.com/rasulov-emirlan/esep-backend/internal/domains/stores"
 )
 
 type (
+	StoresCreateRequest struct {
+		Name        string `json:"name" validate:"required"`
+		Description string `json:"description"`
+	}
+
 	StoresReadRequest struct {
 		Text    string `query:"text"`
 		OwnerID string `query:"ownerID"`
 
 		// Pagination
 		PageNumber uint64 `query:"pageNumber"`
-		PageSize   int    `query:"pageSize"`
+		PageSize   uint   `query:"pageSize"`
 
 		// Sorting
 		SortBy    string `query:"sortBy"`    // name, createdAt
@@ -27,7 +34,12 @@ type StoresHandler struct {
 }
 
 func (h StoresHandler) Create(ctx echo.Context) error {
-	req := new(stores.CreateInput)
+	session, ok := ctx.Get(AuthSessionContextName).(auth.AccessKey)
+	if !ok {
+		return respondErr(ctx, http.StatusUnauthorized, errors.New("unauthorized"))
+	}
+
+	req := new(StoresCreateRequest)
 	if err := ctx.Bind(req); err != nil {
 		return respondErr(ctx, http.StatusBadRequest, err)
 	}
@@ -36,7 +48,11 @@ func (h StoresHandler) Create(ctx echo.Context) error {
 		return respondErr(ctx, http.StatusBadRequest, err)
 	}
 
-	store, err := h.storesService.Create(ctx.Request().Context(), *req)
+	store, err := h.storesService.Create(ctx.Request().Context(), stores.CreateInput{
+		Name:        req.Name,
+		Description: req.Description,
+		OwnerID:     session.UserID,
+	})
 	if err != nil {
 		return respondErr(ctx, http.StatusInternalServerError, err)
 	}
@@ -45,6 +61,22 @@ func (h StoresHandler) Create(ctx echo.Context) error {
 }
 
 func (h StoresHandler) Read(ctx echo.Context) error {
+	id := ctx.Param("id")
+	if id == "" {
+		return respondErr(ctx, http.StatusBadRequest, errors.New("id is required"))
+	}
+
+	in := stores.ReadByInput{}
+	in.ID.Set(id)
+	store, err := h.storesService.ReadBy(ctx.Request().Context(), in)
+	if err != nil {
+		return respondErr(ctx, http.StatusInternalServerError, err)
+	}
+
+	return ctx.JSON(http.StatusOK, store)
+}
+
+func (h StoresHandler) ReadBy(ctx echo.Context) error {
 	req := new(StoresReadRequest)
 	if err := ctx.Bind(req); err != nil {
 		return respondErr(ctx, http.StatusBadRequest, err)

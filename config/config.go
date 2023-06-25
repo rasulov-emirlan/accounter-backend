@@ -43,6 +43,9 @@ func LoadConfig() (Config, error) {
 	var cfg Config
 
 	cfg.Flags = loadFlags()
+	if cfg.Flags.DevMode {
+		cfg.LogLevel = "dev"
+	}
 
 	header := "Config loaded from file"
 

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rasulov-emirlan/esep-backend/internal/domains/stores"
 	"github.com/rasulov-emirlan/esep-backend/internal/entities"
@@ -44,8 +45,14 @@ func (r storesRepository) Create(ctx context.Context, store entities.Store) (ent
 	return store, nil
 }
 
+var storeSortingFields = map[string]string{
+	stores.SortByCreatedAt: "stores.created_at",
+	stores.SortByName:      "stores.name",
+}
+
 func (r storesRepository) ReadBy(ctx context.Context, filter stores.ReadByInput) ([]entities.Store, error) {
-	query := sq.Select("id", "owner_id", "name", "description", "created_at").
+	query := sq.Select("stores.id", "owner_id", "owners.full_name", "owners.username", "owners.created_at", "name", "description", "stores.created_at").
+		LeftJoin("owners ON owners.id = stores.owner_id").
 		From("stores").
 		PlaceholderFormat(sq.Dollar)
 
@@ -62,8 +69,36 @@ func (r storesRepository) ReadBy(ctx context.Context, filter stores.ReadByInput)
 			query = query.Where(sq.Expr("tsv @@ plainto_tsquery(?)", val))
 		}
 	} else {
-		query = query.Where(sq.Eq{"id": val})
+		query = query.Where(sq.Eq{"stores.id": val})
 	}
+
+	sortBy, ok := filter.SortBy.Get()
+	if ok {
+		sortBy, ok := storeSortingFields[sortBy]
+		if !ok {
+			// TODO: return error or something
+			sortBy = "stores.created_at"
+		}
+		sortOrder, ok := filter.SortOrder.Get()
+		if !ok {
+			sortOrder = "asc"
+		}
+		query = query.OrderBy(sortBy + " " + sortOrder)
+	} else {
+		query = query.OrderBy("stores.created_at desc")
+	}
+
+	pageSize, ok := filter.PageSize.Get()
+	if !ok {
+		pageSize = 10
+	}
+
+	page, ok := filter.PageNumber.Get()
+	if !ok {
+		page = 1
+	}
+
+	query = query.Limit(uint64(pageSize)).Offset(uint64((page - 1) * uint64(pageSize)))
 
 	sql, args, err := query.ToSql()
 	if err != nil {
@@ -79,9 +114,11 @@ func (r storesRepository) ReadBy(ctx context.Context, filter stores.ReadByInput)
 	stores := make([]entities.Store, 0)
 	for rows.Next() {
 		var store entities.Store
-		if err := rows.Scan(&store.ID, &store.Name, &store.Description, &store.CreatedAt); err != nil {
+		var owner entities.Owner
+		if err := rows.Scan(&store.ID, &owner.ID, &owner.FullName, &owner.Username, &owner.CreatedAt, &store.Name, &store.Description, &store.CreatedAt); err != nil {
 			return nil, err
 		}
+		store.Owner = &owner
 		stores = append(stores, store)
 	}
 
@@ -91,8 +128,7 @@ func (r storesRepository) ReadBy(ctx context.Context, filter stores.ReadByInput)
 func (r storesRepository) Update(ctx context.Context, id string, changeset stores.UpdateInput) (entities.Store, error) {
 	store := entities.Store{}
 	query := sq.Update("stores").
-		Where(sq.Eq{"id": id}).
-		Suffix("RETURNING \"id\"")
+		Where(sq.Eq{"id": id})
 
 	val, ok := changeset.Name.Get()
 	if ok {
@@ -112,15 +148,16 @@ func (r storesRepository) Update(ctx context.Context, id string, changeset store
 		))
 	}
 
-	sql, args, err := query.ToSql()
+	sql, args, err := query.PlaceholderFormat(sq.Dollar).ToSql()
 	if err != nil {
 		return entities.Store{}, err
 	}
 
-	row := r.conn.QueryRow(ctx, sql, args...)
-	if err := row.Scan(&id); err != nil {
+	_, err = r.conn.Exec(ctx, sql, args...)
+	if err != nil {
 		return entities.Store{}, err
 	}
+	store.ID = uuid.MustParse(id)
 
 	return store, nil
 }

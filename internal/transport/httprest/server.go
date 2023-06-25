@@ -37,7 +37,7 @@ func (s *server) Start(log *logging.Logger, doms domains.DomainCombiner) error {
 	router.Use(middleware.Recover())
 	router.Use(middleware.CORS())
 	router.Use(middleware.Secure())
-	router.Use(middleware.AddTrailingSlash())
+	router.Use(middleware.RemoveTrailingSlash())
 	router.Use(middleware.Gzip())
 	router.Use(log.NewEchoMiddleware)
 	router.Validator = validation.GetValidator()
@@ -53,14 +53,16 @@ func (s *server) Start(log *logging.Logger, doms domains.DomainCombiner) error {
 		authGroup.POST("/register", authHandler.Register)
 		authGroup.POST("/login", authHandler.Login)
 		authGroup.POST("/refresh", authHandler.Refresh)
+		authGroup.GET("/me", authHandler.Me, authHandler.MiddlewareUnpackAccess)
 	}
 
 	storesHandler := StoresHandler{doms.StoresService()}
-	storesGroup := router.Group("/stores")
+	storesGroup := router.Group("/stores", authHandler.MiddlewareUnpackAccess)
 	{
-		storesGroup.GET("", storesHandler.Read)
+		storesGroup.GET("/:id", storesHandler.Read)
+		storesGroup.GET("", storesHandler.ReadBy)
 		storesGroup.POST("", storesHandler.Create)
-		storesGroup.PUT("/:id", storesHandler.Update)
+		storesGroup.PATCH("/:id", storesHandler.Update)
 		storesGroup.DELETE("/:id", storesHandler.Delete)
 	}
 

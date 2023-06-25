@@ -16,7 +16,7 @@ type (
 
 		// Pagination
 		PageNumber entities.OptField[uint64] `json:"pageNumber"`
-		PageSize   entities.OptField[int]    `json:"pageSize"`
+		PageSize   entities.OptField[uint]   `json:"pageSize"`
 
 		// Sorting
 		SortBy    entities.OptField[string] `json:"sortBy"`    // name, createdAt

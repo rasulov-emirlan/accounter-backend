@@ -16,7 +16,7 @@ var (
 
 type Owner struct {
 	ID          uuid.UUID `json:"id"`
-	PhoneNumber string    `json:"phoneNumber" validate:"max=500"`
+	PhoneNumber string    `json:"phoneNumber,omitempty" validate:"max=500"`
 	FullName    string    `json:"fullName" validate:"required"`
 	Username    string    `json:"username" validate:"required,max=500"`
 	Password    string    `json:"-"`

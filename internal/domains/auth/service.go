@@ -30,6 +30,10 @@ type (
 		Register(ctx context.Context, input RegisterInput) (Session, error)
 		Login(ctx context.Context, input LoginInput) (Session, error)
 		Refresh(ctx context.Context, refreshToken string) (Session, error)
+
+		ParseAccessKey(ctx context.Context, accessToken string) (AccessKey, error)
+		ParseRefreshKey(ctx context.Context, refreshToken string) (RefreshKey, error)
+		Me(ctx context.Context, accessKey AccessKey) (entities.Owner, error)
 	}
 
 	service struct {
@@ -117,7 +121,7 @@ func (s service) Login(ctx context.Context, input LoginInput) (Session, error) {
 func (s service) Refresh(ctx context.Context, refreshToken string) (Session, error) {
 	defer s.log.Sync()
 
-	claims, err := s.ParseRefreshKey(refreshToken)
+	claims, err := s.ParseRefreshKey(ctx, refreshToken)
 	if err != nil {
 		s.log.Debug("auth:Refresh - failed to parse refresh key", logging.String("stage", "jwt"), logging.Error("err", err))
 		return Session{}, ErrInvalidRefreshToken
@@ -180,7 +184,7 @@ func generateSession(o entities.Owner, secretKey []byte) (Session, error) {
 	}, nil
 }
 
-func (s service) ParseAccessKey(key string) (AccessKey, error) {
+func (s service) ParseAccessKey(ctx context.Context, key string) (AccessKey, error) {
 	var claims AccessKey
 	_, err := jwt.ParseWithClaims(key, &claims, func(token *jwt.Token) (interface{}, error) {
 		return s.secretKey, nil
@@ -192,7 +196,7 @@ func (s service) ParseAccessKey(key string) (AccessKey, error) {
 	return claims, nil
 }
 
-func (s service) ParseRefreshKey(key string) (RefreshKey, error) {
+func (s service) ParseRefreshKey(ctx context.Context, key string) (RefreshKey, error) {
 	var claims RefreshKey
 	_, err := jwt.ParseWithClaims(key, &claims, func(token *jwt.Token) (interface{}, error) {
 		return s.secretKey, nil
@@ -202,4 +206,21 @@ func (s service) ParseRefreshKey(key string) (RefreshKey, error) {
 	}
 
 	return claims, nil
+}
+
+func (s service) Me(ctx context.Context, accessKey AccessKey) (entities.Owner, error) {
+	defer s.log.Sync()
+
+	o, err := s.ownersRepo.Read(ctx, accessKey.UserID)
+	if err != nil {
+		if err == ErrIdNotFound {
+			s.log.Debug("auth:Me - owner not found", logging.String("stage", "repository"), logging.Error("err", err))
+			return entities.Owner{}, err
+		}
+		s.log.Error("auth:Me - failed to read owner", logging.String("stage", "repository"), logging.Error("err", err))
+		return entities.Owner{}, ErrDefault
+	}
+
+	s.log.Info("auth:Me - successfully read owner", logging.String("stage", "success"), logging.String("username", o.Username))
+	return o, nil
 }

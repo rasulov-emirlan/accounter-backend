@@ -3,12 +3,16 @@ package httprest
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rasulov-emirlan/esep-backend/internal/domains/auth"
 )
 
-const AuthRefreshCookieName = "refresh_token"
+const (
+	AuthRefreshCookieName  = "refresh_token"
+	AuthSessionContextName = "session"
+)
 
 type AuthRefreshRequest struct {
 	RefreshToken string `json:"refreshToken" validate:"required"`
@@ -113,4 +117,40 @@ func (h AuthHandler) Logout(ctx echo.Context) error {
 	})
 
 	return ctx.NoContent(http.StatusOK)
+}
+
+func (h AuthHandler) MiddlewareUnpackAccess(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		accessHeader := ctx.Request().Header.Get("Authorization")
+		if accessHeader == "" {
+			return respondErr(ctx, http.StatusUnauthorized, errors.New("access token is required in 'Authorization' header"))
+		}
+
+		access := strings.Split(accessHeader, " ")
+		if len(access) != 2 || access[0] != "Bearer" {
+			return respondErr(ctx, http.StatusUnauthorized, errors.New("invalid access token format"))
+		}
+
+		session, err := h.service.ParseAccessKey(ctx.Request().Context(), access[1])
+		if err != nil {
+			return respondErr(ctx, http.StatusUnauthorized, err)
+		}
+
+		ctx.Set(AuthSessionContextName, session)
+		return next(ctx)
+	}
+}
+
+func (h AuthHandler) Me(ctx echo.Context) error {
+	session, ok := ctx.Get(AuthSessionContextName).(auth.AccessKey)
+	if !ok {
+		return respondErr(ctx, http.StatusInternalServerError, errors.New("session not found in context"))
+	}
+
+	me, err := h.service.Me(ctx.Request().Context(), session)
+	if err != nil {
+		return respondErr(ctx, http.StatusInternalServerError, err)
+	}
+
+	return ctx.JSON(http.StatusOK, me)
 }

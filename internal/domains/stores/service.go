@@ -76,7 +76,7 @@ func (s service) ReadBy(ctx context.Context, filter ReadByInput) ([]entities.Sto
 	if !ok {
 		filter.PageSize.Set(10)
 	} else if val < 1 || val > 100 {
-		s.log.Debug("stores:ReadBy - invalid page size", logging.String("stage", "validation"), logging.Int("pageSize", val1))
+		s.log.Debug("stores:ReadBy - invalid page size", logging.String("stage", "validation"), logging.Uint("pageSize", val1))
 		return nil, errors.New("размер страницы должен быть в диапазоне от 1 до 100")
 	}
 

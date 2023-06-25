@@ -27,6 +27,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer log.Sync()
 
 	repo, err := postgresql.NewRepositories(ctx, cfg, log)
 	if err != nil {
@@ -34,7 +35,10 @@ func main() {
 	}
 	defer repo.Close()
 
-	doms, err := domains.NewDomainCombiner(domains.CommonDependencies{Log: log, Val: validation.GetValidator()}, domains.AuthDependencies{OwnersRepo: repo.Owners(), SecretKey: []byte(cfg.JWTsecret)})
+	commDeps := domains.CommonDependencies{Log: log, Val: validation.GetValidator()}
+	authDeps := domains.AuthDependencies{OwnersRepo: repo.Owners(), SecretKey: []byte(cfg.JWTsecret)}
+	storesDeps := domains.StoresDependencies{StoresRepo: repo.Stores()}
+	doms, err := domains.NewDomainCombiner(commDeps, authDeps, storesDeps)
 	if err != nil {
 		log.Fatal("could not init domains", logging.Error("err", err))
 	}

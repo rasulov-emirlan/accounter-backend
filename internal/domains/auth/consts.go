@@ -19,5 +19,6 @@ var (
 	ErrIdNotFound          = errors.New("пользователь с таким id не найден")
 	ErrWrongPassword       = errors.New("неверный пароль")
 	ErrInvalidRefreshToken = errors.New("инвалидный токен для обновления сессии")
+	ErrInvalidAccessToken  = errors.New("инвалидный токен доступа")
 	ErrDefault             = errors.New("что-то пошло не так")
 )
