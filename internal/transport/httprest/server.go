@@ -55,6 +55,15 @@ func (s *server) Start(log *logging.Logger, doms domains.DomainCombiner) error {
 		authGroup.POST("/refresh", authHandler.Refresh)
 	}
 
+	storesHandler := StoresHandler{doms.StoresService()}
+	storesGroup := router.Group("/stores")
+	{
+		storesGroup.GET("", storesHandler.Read)
+		storesGroup.POST("", storesHandler.Create)
+		storesGroup.PUT("/:id", storesHandler.Update)
+		storesGroup.DELETE("/:id", storesHandler.Delete)
+	}
+
 	s.srvr.Handler = router
 
 	return s.srvr.ListenAndServe()

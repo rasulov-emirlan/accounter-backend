@@ -10,12 +10,13 @@ type (
 	}
 
 	ReadByInput struct {
+		ID      entities.OptField[string] `json:"id"`
 		Text    entities.OptField[string] `json:"text"`
 		OwnerID entities.OptField[string] `json:"ownerID"`
 
 		// Pagination
-		PageNumber entities.OptField[int] `json:"pageNumber"`
-		PageSize   entities.OptField[int] `json:"pageSize"`
+		PageNumber entities.OptField[uint64] `json:"pageNumber"`
+		PageSize   entities.OptField[int]    `json:"pageSize"`
 
 		// Sorting
 		SortBy    entities.OptField[string] `json:"sortBy"`    // name, createdAt

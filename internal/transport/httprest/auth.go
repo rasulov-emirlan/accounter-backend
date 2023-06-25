@@ -6,7 +6,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/rasulov-emirlan/esep-backend/internal/domains/auth"
-	"github.com/rasulov-emirlan/esep-backend/pkg/validation"
 )
 
 const AuthRefreshCookieName = "refresh_token"
@@ -17,17 +16,6 @@ type AuthRefreshRequest struct {
 
 type AuthHandler struct {
 	service auth.Service
-}
-
-func respondErr(ctx echo.Context, code int, err error) error {
-	if code == http.StatusBadRequest {
-		return ctx.JSON(code, echo.Map{
-			"error": validation.GetValidator().Mappify(err),
-		})
-	}
-	return ctx.JSON(code, echo.Map{
-		"error": err.Error(),
-	})
 }
 
 func (h AuthHandler) Register(ctx echo.Context) error {

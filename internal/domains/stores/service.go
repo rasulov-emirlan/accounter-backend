@@ -68,15 +68,15 @@ func (s service) ReadBy(ctx context.Context, filter ReadByInput) ([]entities.Sto
 	if !ok {
 		filter.PageNumber.Set(1)
 	} else if val < 1 {
-		s.log.Debug("stores:ReadBy - invalid page number", logging.String("stage", "validation"), logging.Int("pageNumber", val))
+		s.log.Debug("stores:ReadBy - invalid page number", logging.String("stage", "validation"), logging.Uint64("pageNumber", val))
 		return nil, errors.New("номер страницы не может быть меньше 1")
 	}
 
-	val, ok = filter.PageSize.Get()
+	val1, ok := filter.PageSize.Get()
 	if !ok {
 		filter.PageSize.Set(10)
 	} else if val < 1 || val > 100 {
-		s.log.Debug("stores:ReadBy - invalid page size", logging.String("stage", "validation"), logging.Int("pageSize", val))
+		s.log.Debug("stores:ReadBy - invalid page size", logging.String("stage", "validation"), logging.Int("pageSize", val1))
 		return nil, errors.New("размер страницы должен быть в диапазоне от 1 до 100")
 	}
 

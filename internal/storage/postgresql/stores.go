@@ -25,7 +25,7 @@ func (r storesRepository) Create(ctx context.Context, store entities.Store) (ent
 		Values(
 			store.Owner.ID, store.Name, store.Description, store.CreatedAt,
 			sq.Expr(
-				`setweight(to_tsvector($1), 'A') || setweight(to_tsvector($2), 'B')`,
+				`setweight(to_tsvector(?), 'A') || setweight(to_tsvector(?), 'B')`,
 				store.Name, store.Description,
 			)).
 		Suffix("RETURNING \"id\"").
@@ -49,15 +49,20 @@ func (r storesRepository) ReadBy(ctx context.Context, filter stores.ReadByInput)
 		From("stores").
 		PlaceholderFormat(sq.Dollar)
 
-	val, ok := filter.OwnerID.Get()
-	if ok {
-		query = query.Where(sq.Eq{"owner_id": val})
-	}
+	val, ok := filter.ID.Get()
+	if !ok {
+		val, ok := filter.OwnerID.Get()
+		if ok {
+			query = query.Where(sq.Eq{"owner_id": val})
+		}
 
-	val, ok = filter.Text.Get()
-	if ok {
-		// full text search on 'tsv' column
-		query = query.Where(sq.Expr("tsv @@ plainto_tsquery(?)", val))
+		val, ok = filter.Text.Get()
+		if ok {
+			// full text search on 'tsv' column
+			query = query.Where(sq.Expr("tsv @@ plainto_tsquery(?)", val))
+		}
+	} else {
+		query = query.Where(sq.Eq{"id": val})
 	}
 
 	sql, args, err := query.ToSql()

@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/rasulov-emirlan/esep-backend/internal/domains/auth"
+	"github.com/rasulov-emirlan/esep-backend/internal/domains/stores"
 	"github.com/rasulov-emirlan/esep-backend/pkg/logging"
 	"github.com/rasulov-emirlan/esep-backend/pkg/validation"
 )
@@ -47,6 +48,21 @@ func (d AuthDependencies) Validate() error {
 		return DependencyError{
 			Dependency:       "AuthDependencies.SecretKey",
 			BrokenConstraint: "secret key must be at least 4 bytes long",
+		}
+	}
+
+	return nil
+}
+
+type StoresDependencies struct {
+	StoresRepo stores.StoresRepository
+}
+
+func (d StoresDependencies) Validate() error {
+	if isNil(d.StoresRepo) {
+		return DependencyError{
+			Dependency:       "StoresDependencies.StoresRepo",
+			BrokenConstraint: "stores repository cannot be nil",
 		}
 	}
 
