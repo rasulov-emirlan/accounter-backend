@@ -12,6 +12,7 @@ import (
 
 type RepositoryCombiner struct {
 	ownersRepo ownersRepository
+	storesRepo storesRepository
 }
 
 func NewRepositories(ctx context.Context, cfg config.Config, log *logging.Logger) (RepositoryCombiner, error) {
@@ -37,14 +38,18 @@ func NewRepositories(ctx context.Context, cfg config.Config, log *logging.Logger
 		}
 	}
 
-	ownersRepo := ownersRepository{conn}
 	return RepositoryCombiner{
-		ownersRepo: ownersRepo,
+		ownersRepo: ownersRepository{conn},
+		storesRepo: storesRepository{conn},
 	}, nil
 }
 
 func (r RepositoryCombiner) Owners() ownersRepository {
 	return r.ownersRepo
+}
+
+func (r RepositoryCombiner) Stores() storesRepository {
+	return r.storesRepo
 }
 
 func (r RepositoryCombiner) Close() {
