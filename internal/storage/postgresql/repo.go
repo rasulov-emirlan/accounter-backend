@@ -11,8 +11,9 @@ import (
 )
 
 type RepositoryCombiner struct {
-	ownersRepo ownersRepository
-	storesRepo storesRepository
+	ownersRepo     ownersRepository
+	storesRepo     storesRepository
+	categoriesRepo categoriesRepository
 }
 
 func NewRepositories(ctx context.Context, cfg config.Config, log *logging.Logger) (RepositoryCombiner, error) {
@@ -39,8 +40,9 @@ func NewRepositories(ctx context.Context, cfg config.Config, log *logging.Logger
 	}
 
 	return RepositoryCombiner{
-		ownersRepo: ownersRepository{conn},
-		storesRepo: storesRepository{conn},
+		ownersRepo:     ownersRepository{conn},
+		storesRepo:     storesRepository{conn},
+		categoriesRepo: categoriesRepository{conn},
 	}, nil
 }
 
@@ -50,6 +52,10 @@ func (r RepositoryCombiner) Owners() ownersRepository {
 
 func (r RepositoryCombiner) Stores() storesRepository {
 	return r.storesRepo
+}
+
+func (r RepositoryCombiner) Categories() categoriesRepository {
+	return r.categoriesRepo
 }
 
 func (r RepositoryCombiner) Close() {

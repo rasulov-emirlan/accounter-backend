@@ -12,9 +12,10 @@ type (
 
 	ReadByInput struct {
 		// if ID is set, other filters will be ignored
-		ID      entities.OptField[string] `json:"id" validate:"uuid4"`
-		StoreID entities.OptField[string] `json:"storeID" validate:"uuid4"`
-		Text    entities.OptField[string] `json:"text" validate:"max=255"`
+		ID               entities.OptField[string] `json:"id" validate:"uuid4"`
+		StoreID          entities.OptField[string] `json:"storeID" validate:"uuid4"`
+		Text             entities.OptField[string] `json:"text" validate:"max=255"`
+		ParentCategoryID entities.OptField[string] `json:"parentCategoryID" validate:"uuid4"`
 
 		// Pagination
 		PageNumber entities.OptField[uint64] `json:"pageNumber"`
