@@ -19,7 +19,7 @@ type (
 		Store          *Store    `json:"store,omitempty"`
 		ParentCategory *Category `json:"parentCategory,omitempty"`
 		Name           string    `json:"name" validate:"required,max=255"`
-		Article        string    `json:"description" validate:"required,max=100"`
+		Article        string    `json:"article" validate:"required,max=100"`
 		IconURL        string    `json:"iconURL"`
 		CreatedAt      time.Time `json:"createdAt"`
 	}
