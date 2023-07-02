@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/rasulov-emirlan/esep-backend/internal/domains/auth"
+	"github.com/rasulov-emirlan/esep-backend/internal/domains/categories"
 	"github.com/rasulov-emirlan/esep-backend/internal/domains/stores"
 	"github.com/rasulov-emirlan/esep-backend/pkg/logging"
 	"github.com/rasulov-emirlan/esep-backend/pkg/validation"
@@ -63,6 +64,21 @@ func (d StoresDependencies) Validate() error {
 		return DependencyError{
 			Dependency:       "StoresDependencies.StoresRepo",
 			BrokenConstraint: "stores repository cannot be nil",
+		}
+	}
+
+	return nil
+}
+
+type CategoriesDependencies struct {
+	CategoriesRepo categories.CategoriesRepository
+}
+
+func (d CategoriesDependencies) Validate() error {
+	if isNil(d.CategoriesRepo) {
+		return DependencyError{
+			Dependency:       "CategoriesDependencies.CategoriesRepo",
+			BrokenConstraint: "categories repository cannot be nil",
 		}
 	}
 

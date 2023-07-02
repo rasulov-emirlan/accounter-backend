@@ -5,7 +5,7 @@ import "github.com/rasulov-emirlan/esep-backend/internal/entities"
 type (
 	CreateInput struct {
 		Name             string  `json:"name" validate:"required,max=255"`
-		Article          string  `json:"article" validate:"required,max=100"`
+		Article          *string `json:"article" validate:"max=100"`
 		StoreID          string  `json:"storeID" validate:"required,uuid4"`
 		ParentCategoryID *string `json:"parentCategoryID,omitempty" validate:"uuid4"`
 	}
@@ -27,8 +27,9 @@ type (
 	}
 
 	UpdateInput struct {
-		Name             entities.OptField[string] `json:"name" validate:"max=255"`
-		Article          entities.OptField[string] `json:"article" validate:"max=100"`
-		ParentCategoryID *string                   `json:"parentCategoryID,omitempty" validate:"uuid4"`
+		ID               string                     `json:"id" validate:"required,uuid4"`
+		Name             entities.OptField[string]  `json:"name" validate:"max=255"`
+		Article          entities.OptField[*string] `json:"article" validate:"max=100"`
+		ParentCategoryID entities.OptField[*string] `json:"parentCategoryID,omitempty" validate:"uuid4"`
 	}
 )

@@ -122,6 +122,7 @@ func (c categoriesRepository) ReadBy(ctx context.Context, filters categories.Rea
 
 func (c categoriesRepository) Update(ctx context.Context, changeset categories.UpdateInput) (entities.Category, error) {
 	query := sq.Update("categories").
+		Where(sq.Eq{"id": changeset.ID}).
 		PlaceholderFormat(sq.Dollar)
 	var category entities.Category
 
@@ -135,9 +136,10 @@ func (c categoriesRepository) Update(ctx context.Context, changeset categories.U
 		query = query.Set("article", article)
 		category.Article = article
 	}
-	if changeset.ParentCategoryID != nil {
-		query = query.Set("parent_category_id", changeset.ParentCategoryID)
-		category.ParentCategory = &entities.Category{ID: uuid.MustParse(*changeset.ParentCategoryID)}
+	parent, ok := changeset.ParentCategoryID.Get()
+	if ok {
+		query = query.Set("parent_category_id", parent)
+		category.ParentCategory = &entities.Category{ID: uuid.MustParse(*parent)}
 	}
 
 	sql, args, err := query.ToSql()

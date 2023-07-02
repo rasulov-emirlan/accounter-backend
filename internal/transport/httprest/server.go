@@ -66,6 +66,16 @@ func (s *server) Start(log *logging.Logger, doms domains.DomainCombiner) error {
 		storesGroup.DELETE("/:id", storesHandler.Delete)
 	}
 
+	categoriesHandler := CategoriesHandler{doms.CategoriesService()}
+	categoriesGroup := router.Group("/categories", authHandler.MiddlewareUnpackAccess)
+	{
+		categoriesGroup.GET("/:id", categoriesHandler.Read)
+		categoriesGroup.GET("", categoriesHandler.ReadBy)
+		categoriesGroup.POST("", categoriesHandler.Create)
+		categoriesGroup.PATCH("/:id", categoriesHandler.Update)
+		categoriesGroup.DELETE("/:id", categoriesHandler.Delete)
+	}
+
 	s.srvr.Handler = router
 
 	return s.srvr.ListenAndServe()

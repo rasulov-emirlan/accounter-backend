@@ -10,7 +10,7 @@ import (
 )
 
 type (
-	Repository interface {
+	CategoriesRepository interface {
 		Create(ctx context.Context, input entities.Category) (entities.Category, error)
 		ReadBy(ctx context.Context, filters ReadByInput) ([]entities.Category, error)
 		Update(ctx context.Context, changeset UpdateInput) (entities.Category, error)
@@ -25,14 +25,14 @@ type (
 	}
 
 	service struct {
-		repo Repository
+		repo CategoriesRepository
 		log  *logging.Logger
 	}
 )
 
 var _ Service = (*service)(nil)
 
-func NewService(repo Repository, log *logging.Logger) service {
+func NewService(repo CategoriesRepository, log *logging.Logger) service {
 	return service{repo: repo, log: log}
 }
 
@@ -127,7 +127,7 @@ func (s service) Update(ctx context.Context, changeset UpdateInput) (entities.Ca
 	}
 
 	article, ok := changeset.Article.Get()
-	if ok && len(article) > 100 {
+	if ok && article != nil && len(*article) > 100 {
 		s.log.Debug("categories:Update - article must be less than 100 characters", logging.String("stage", "validation"))
 		return entities.Category{}, errors.New("артикул должен быть меньше 100 символов")
 	}

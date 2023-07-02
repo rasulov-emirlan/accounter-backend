@@ -38,7 +38,8 @@ func main() {
 	commDeps := domains.CommonDependencies{Log: log, Val: validation.GetValidator()}
 	authDeps := domains.AuthDependencies{OwnersRepo: repo.Owners(), SecretKey: []byte(cfg.JWTsecret)}
 	storesDeps := domains.StoresDependencies{StoresRepo: repo.Stores()}
-	doms, err := domains.NewDomainCombiner(commDeps, authDeps, storesDeps)
+	categoriesDeps := domains.CategoriesDependencies{CategoriesRepo: repo.Categories()}
+	doms, err := domains.NewDomainCombiner(commDeps, authDeps, storesDeps, categoriesDeps)
 	if err != nil {
 		log.Fatal("could not init domains", logging.Error("err", err))
 	}

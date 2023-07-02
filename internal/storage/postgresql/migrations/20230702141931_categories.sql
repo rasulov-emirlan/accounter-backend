@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS categories (
   store_id           uuid NOT NULL,
   parent_category_id uuid,
   name               VARCHAR(255) NOT NULL,
-  article            VARCHAR(100) NOT NULL,
+  article            VARCHAR(100),
   icon_url           TEXT,
   created_at         TIMESTAMP NOT NULL DEFAULT NOW(),
   CONSTRAINT fk_categories_store_id FOREIGN KEY (store_id)
