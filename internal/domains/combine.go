@@ -1,9 +1,9 @@
 package domains
 
 import (
-	"github.com/rasulov-emirlan/esep-backend/internal/domains/auth"
-	"github.com/rasulov-emirlan/esep-backend/internal/domains/categories"
-	"github.com/rasulov-emirlan/esep-backend/internal/domains/stores"
+	"github.com/SanaripEsep/esep-backend/internal/domains/auth"
+	"github.com/SanaripEsep/esep-backend/internal/domains/categories"
+	"github.com/SanaripEsep/esep-backend/internal/domains/stores"
 )
 
 type DomainCombiner struct {

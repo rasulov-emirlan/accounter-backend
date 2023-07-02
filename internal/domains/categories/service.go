@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
+	"github.com/SanaripEsep/esep-backend/internal/entities"
+	"github.com/SanaripEsep/esep-backend/pkg/logging"
 	"github.com/google/uuid"
-	"github.com/rasulov-emirlan/esep-backend/internal/entities"
-	"github.com/rasulov-emirlan/esep-backend/pkg/logging"
 )
 
 type (

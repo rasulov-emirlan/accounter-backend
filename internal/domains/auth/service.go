@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/SanaripEsep/esep-backend/internal/entities"
+	"github.com/SanaripEsep/esep-backend/pkg/logging"
+	"github.com/SanaripEsep/esep-backend/pkg/validation"
 	"github.com/golang-jwt/jwt"
-	"github.com/rasulov-emirlan/esep-backend/internal/entities"
-	"github.com/rasulov-emirlan/esep-backend/pkg/logging"
-	"github.com/rasulov-emirlan/esep-backend/pkg/validation"
 )
 
 type (

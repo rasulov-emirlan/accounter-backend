@@ -6,12 +6,12 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/rasulov-emirlan/esep-backend/config"
-	"github.com/rasulov-emirlan/esep-backend/internal/domains"
-	"github.com/rasulov-emirlan/esep-backend/internal/storage/postgresql"
-	"github.com/rasulov-emirlan/esep-backend/internal/transport/httprest"
-	"github.com/rasulov-emirlan/esep-backend/pkg/logging"
-	"github.com/rasulov-emirlan/esep-backend/pkg/validation"
+	"github.com/SanaripEsep/esep-backend/config"
+	"github.com/SanaripEsep/esep-backend/internal/domains"
+	"github.com/SanaripEsep/esep-backend/internal/storage/postgresql"
+	"github.com/SanaripEsep/esep-backend/internal/transport/httprest"
+	"github.com/SanaripEsep/esep-backend/pkg/logging"
+	"github.com/SanaripEsep/esep-backend/pkg/validation"
 )
 
 func main() {

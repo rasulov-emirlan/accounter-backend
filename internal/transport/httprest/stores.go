@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/SanaripEsep/esep-backend/internal/domains/auth"
+	"github.com/SanaripEsep/esep-backend/internal/domains/stores"
 	"github.com/labstack/echo/v4"
-	"github.com/rasulov-emirlan/esep-backend/internal/domains/auth"
-	"github.com/rasulov-emirlan/esep-backend/internal/domains/stores"
 )
 
 type (

@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/SanaripEsep/esep-backend/config"
+	"github.com/SanaripEsep/esep-backend/internal/storage/postgresql/migrations"
+	"github.com/SanaripEsep/esep-backend/pkg/logging"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rasulov-emirlan/esep-backend/config"
-	"github.com/rasulov-emirlan/esep-backend/internal/storage/postgresql/migrations"
-	"github.com/rasulov-emirlan/esep-backend/pkg/logging"
 )
 
 type RepositoryCombiner struct {

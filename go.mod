@@ -1,4 +1,4 @@
-module github.com/rasulov-emirlan/esep-backend
+module github.com/SanaripEsep/esep-backend
 
 go 1.19
 

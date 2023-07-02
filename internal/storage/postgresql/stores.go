@@ -6,10 +6,10 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/SanaripEsep/esep-backend/internal/domains/stores"
+	"github.com/SanaripEsep/esep-backend/internal/entities"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rasulov-emirlan/esep-backend/internal/domains/stores"
-	"github.com/rasulov-emirlan/esep-backend/internal/entities"
 )
 
 type storesRepository struct {

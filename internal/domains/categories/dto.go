@@ -1,6 +1,6 @@
 package categories
 
-import "github.com/rasulov-emirlan/esep-backend/internal/entities"
+import "github.com/SanaripEsep/esep-backend/internal/entities"
 
 type (
 	CreateInput struct {
