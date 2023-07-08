@@ -6,6 +6,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/SanaripEsep/esep-backend/internal/domains/categories"
 	"github.com/SanaripEsep/esep-backend/internal/entities"
+	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -15,6 +16,8 @@ type categoriesRepository struct {
 }
 
 func (c categoriesRepository) Create(ctx context.Context, input entities.Category) (entities.Category, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"categoriesRepository.Create").End()
+
 	var (
 		storeID          *string
 		parentCategoryID *string
@@ -37,6 +40,8 @@ func (c categoriesRepository) Create(ctx context.Context, input entities.Categor
 }
 
 func (c categoriesRepository) ReadBy(ctx context.Context, filters categories.ReadByInput) ([]entities.Category, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"categoriesRepository.ReadBy").End()
+
 	query := sq.Select("id", "store_id", "parent_category_id", "name", "article", "icon_url", "created_at").
 		From("categories").
 		PlaceholderFormat(sq.Dollar)
@@ -121,6 +126,8 @@ func (c categoriesRepository) ReadBy(ctx context.Context, filters categories.Rea
 }
 
 func (c categoriesRepository) Update(ctx context.Context, changeset categories.UpdateInput) (entities.Category, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"categoriesRepository.Update").End()
+
 	query := sq.Update("categories").
 		Where(sq.Eq{"id": changeset.ID}).
 		PlaceholderFormat(sq.Dollar)
@@ -152,6 +159,8 @@ func (c categoriesRepository) Update(ctx context.Context, changeset categories.U
 }
 
 func (c categoriesRepository) Delete(ctx context.Context, id string) error {
+	defer telemetry.NewSpan(ctx, PackageName+"categoriesRepository.Delete").End()
+
 	const sql = "DELETE FROM categories WHERE id = $1"
 	_, err := c.conn.Exec(ctx, sql, id)
 	return err

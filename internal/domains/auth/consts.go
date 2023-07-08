@@ -6,6 +6,8 @@ import (
 )
 
 const (
+	PackageName = "internal/domains/auth/"
+
 	RoleOwner  = "owner"
 	RoleSeller = "seller"
 

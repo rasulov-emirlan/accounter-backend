@@ -6,6 +6,7 @@ import (
 
 	"github.com/SanaripEsep/esep-backend/internal/entities"
 	"github.com/SanaripEsep/esep-backend/pkg/logging"
+	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
 	"github.com/SanaripEsep/esep-backend/pkg/validation"
 	"github.com/golang-jwt/jwt"
 )
@@ -56,6 +57,7 @@ func NewService(ownersRepo OwnersRepository, log *logging.Logger, val *validatio
 }
 
 func (s service) Register(ctx context.Context, input RegisterInput) (Session, error) {
+	defer telemetry.NewSpan(ctx, telemetry.Name(PackageName+"service.Register")).End()
 	defer s.log.Sync()
 
 	o, err := entities.NewOwner(input.PhoneNumber, input.FullName, input.Username, input.Password)
@@ -90,6 +92,7 @@ func (s service) Register(ctx context.Context, input RegisterInput) (Session, er
 }
 
 func (s service) Login(ctx context.Context, input LoginInput) (Session, error) {
+	defer telemetry.NewSpan(ctx, telemetry.Name(PackageName+"service.Login")).End()
 	defer s.log.Sync()
 
 	o, err := s.ownersRepo.ReadByUsername(ctx, input.Username)
@@ -119,6 +122,7 @@ func (s service) Login(ctx context.Context, input LoginInput) (Session, error) {
 }
 
 func (s service) Refresh(ctx context.Context, refreshToken string) (Session, error) {
+	defer telemetry.NewSpan(ctx, telemetry.Name(PackageName+"service.Refresh")).End()
 	defer s.log.Sync()
 
 	claims, err := s.ParseRefreshKey(ctx, refreshToken)
@@ -185,6 +189,7 @@ func generateSession(o entities.Owner, secretKey []byte) (Session, error) {
 }
 
 func (s service) ParseAccessKey(ctx context.Context, key string) (AccessKey, error) {
+	defer telemetry.NewSpan(ctx, telemetry.Name(PackageName+"service.ParseAccessKey")).End()
 	var claims AccessKey
 	_, err := jwt.ParseWithClaims(key, &claims, func(token *jwt.Token) (interface{}, error) {
 		return s.secretKey, nil
@@ -197,6 +202,7 @@ func (s service) ParseAccessKey(ctx context.Context, key string) (AccessKey, err
 }
 
 func (s service) ParseRefreshKey(ctx context.Context, key string) (RefreshKey, error) {
+	defer telemetry.NewSpan(ctx, telemetry.Name(PackageName+"service.ParseRefreshKey")).End()
 	var claims RefreshKey
 	_, err := jwt.ParseWithClaims(key, &claims, func(token *jwt.Token) (interface{}, error) {
 		return s.secretKey, nil
@@ -209,6 +215,7 @@ func (s service) ParseRefreshKey(ctx context.Context, key string) (RefreshKey, e
 }
 
 func (s service) Me(ctx context.Context, accessKey AccessKey) (entities.Owner, error) {
+	defer telemetry.NewSpan(ctx, telemetry.Name(PackageName+"service.Me")).End()
 	defer s.log.Sync()
 
 	o, err := s.ownersRepo.Read(ctx, accessKey.UserID)

@@ -11,12 +11,16 @@ import (
 	"github.com/SanaripEsep/esep-backend/internal/storage/postgresql"
 	"github.com/SanaripEsep/esep-backend/internal/transport/httprest"
 	"github.com/SanaripEsep/esep-backend/pkg/logging"
+	"github.com/SanaripEsep/esep-backend/pkg/shutdown"
+	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
 	"github.com/SanaripEsep/esep-backend/pkg/validation"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	cleaner := shutdown.NewScheduler()
 
 	cfg, err := config.LoadConfig()
 	if err != nil {
@@ -33,7 +37,8 @@ func main() {
 	if err != nil {
 		log.Fatal("could not init repositories", logging.Error("err", err))
 	}
-	defer repo.Close()
+	cleaner.Add(repo.Close)
+	log.Info("repositories initialized")
 
 	commDeps := domains.CommonDependencies{Log: log, Val: validation.GetValidator()}
 	authDeps := domains.AuthDependencies{OwnersRepo: repo.Owners(), SecretKey: []byte(cfg.JWTsecret)}
@@ -43,15 +48,21 @@ func main() {
 	if err != nil {
 		log.Fatal("could not init domains", logging.Error("err", err))
 	}
+	log.Info("domains initialized")
 
 	srvr := httprest.NewServer(cfg)
+	cleaner.Add(srvr.Stop)
 	go func() {
 		if err := srvr.Start(log, doms); err != nil && err != httprest.ErrServerClosed {
 			log.Fatal("server start", logging.Error("err", err))
 		}
 	}()
-
 	log.Info("server started", logging.String("port", cfg.Server.Port))
+
+	if err := telemetry.StartJaegerTraceProvider(cfg, &cleaner); err != nil {
+		log.Fatal("telemetry start", logging.Error("err", err))
+	}
+	log.Info("telemetry started")
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
@@ -59,7 +70,7 @@ func main() {
 
 	log.Info("graceful shutdown")
 
-	if err := srvr.Stop(ctx); err != nil {
-		log.Fatal("server stop", logging.Error("err", err))
+	if err := cleaner.Close(ctx); err != nil {
+		log.Fatal("cleaner close", logging.Error("err", err))
 	}
 }

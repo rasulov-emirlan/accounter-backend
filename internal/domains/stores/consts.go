@@ -3,6 +3,8 @@ package stores
 import "errors"
 
 const (
+	PackageName = "internal/domains/stores/"
+
 	SortByCreatedAt = "createdAt"
 	SortByName      = "name"
 )

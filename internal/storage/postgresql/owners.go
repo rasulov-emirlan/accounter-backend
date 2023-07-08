@@ -6,6 +6,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/SanaripEsep/esep-backend/internal/entities"
+	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -14,6 +15,8 @@ type ownersRepository struct {
 }
 
 func (r ownersRepository) Create(ctx context.Context, owner entities.Owner) (entities.Owner, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"ownersRepository.Create").End()
+
 	sql, args, err := sq.Insert("owners").
 		Columns("full_name", "username", "password_hash", "phone_number", "created_at").
 		Values(owner.FullName, owner.Username, owner.Password, owner.PhoneNumber, owner.CreatedAt).
@@ -32,6 +35,8 @@ func (r ownersRepository) Create(ctx context.Context, owner entities.Owner) (ent
 }
 
 func (r ownersRepository) Read(ctx context.Context, id string) (entities.Owner, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"ownersRepository.Read").End()
+
 	var owner entities.Owner
 
 	sql, args, err := sq.Select("id", "full_name", "username", "password_hash", "phone_number", "created_at").
@@ -51,6 +56,8 @@ func (r ownersRepository) Read(ctx context.Context, id string) (entities.Owner, 
 }
 
 func (r ownersRepository) ReadByUsername(ctx context.Context, username string) (entities.Owner, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"ownersRepository.ReadByUsername").End()
+
 	var owner entities.Owner
 
 	sql, args, err := sq.Select("id", "full_name", "username", "password_hash", "phone_number", "created_at").
@@ -70,6 +77,8 @@ func (r ownersRepository) ReadByUsername(ctx context.Context, username string) (
 }
 
 func (r ownersRepository) ReadAll(ctx context.Context) ([]entities.Owner, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"ownersRepository.ReadAll").End()
+
 	var owners []entities.Owner
 
 	sql, args, err := sq.Select("id", "full_name", "username", "password_hash", "phone_number", "created_at").
@@ -96,6 +105,8 @@ func (r ownersRepository) ReadAll(ctx context.Context) ([]entities.Owner, error)
 }
 
 func (r ownersRepository) Update(ctx context.Context, owner entities.Owner) (entities.Owner, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"ownersRepository.Update").End()
+
 	sql, args, err := sq.Update("owners").
 		Set("full_name", owner.FullName).
 		Set("username", owner.Username).
@@ -117,6 +128,8 @@ func (r ownersRepository) Update(ctx context.Context, owner entities.Owner) (ent
 }
 
 func (r ownersRepository) Delete(ctx context.Context, id string) error {
+	defer telemetry.NewSpan(ctx, PackageName+"ownersRepository.Delete").End()
+
 	sql, args, err := sq.Delete("owners").
 		Where(sq.Eq{"id": id}).
 		PlaceholderFormat(sq.Dollar).ToSql()

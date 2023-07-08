@@ -24,3 +24,12 @@ services:
     container_name: esep-backend
     restart: always
     command: "--migrate --dev"
+  
+  esep-jeager:
+    image: jaegertracing/all-in-one:latest
+    network_mode: host
+    container_name: esep-jeager
+    restart: always
+    ports:
+      - 16686:16686
+      - 14268:14268

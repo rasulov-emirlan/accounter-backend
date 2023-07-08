@@ -8,6 +8,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/SanaripEsep/esep-backend/internal/domains/stores"
 	"github.com/SanaripEsep/esep-backend/internal/entities"
+	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -17,6 +18,8 @@ type storesRepository struct {
 }
 
 func (r storesRepository) Create(ctx context.Context, store entities.Store) (entities.Store, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"storesRepository.Create").End()
+
 	if store.Owner == nil {
 		return entities.Store{}, errors.New("owner is required")
 	}
@@ -51,6 +54,8 @@ var storeSortingFields = map[string]string{
 }
 
 func (r storesRepository) ReadBy(ctx context.Context, filter stores.ReadByInput) ([]entities.Store, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"storesRepository.ReadBy").End()
+
 	query := sq.Select("stores.id", "owner_id", "owners.full_name", "owners.username", "owners.created_at", "name", "description", "stores.created_at").
 		LeftJoin("owners ON owners.id = stores.owner_id").
 		From("stores").
@@ -126,6 +131,8 @@ func (r storesRepository) ReadBy(ctx context.Context, filter stores.ReadByInput)
 }
 
 func (r storesRepository) Update(ctx context.Context, id string, changeset stores.UpdateInput) (entities.Store, error) {
+	defer telemetry.NewSpan(ctx, PackageName+"storesRepository.Update").End()
+
 	store := entities.Store{}
 	query := sq.Update("stores").
 		Where(sq.Eq{"id": id})
@@ -163,6 +170,8 @@ func (r storesRepository) Update(ctx context.Context, id string, changeset store
 }
 
 func (r storesRepository) Delete(ctx context.Context, id string) error {
+	defer telemetry.NewSpan(ctx, PackageName+"storesRepository.Delete").End()
+
 	sql, args, err := sq.Delete("stores").
 		Where(sq.Eq{"id": id}).
 		PlaceholderFormat(sq.Dollar).ToSql()

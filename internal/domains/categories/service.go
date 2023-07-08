@@ -6,6 +6,7 @@ import (
 
 	"github.com/SanaripEsep/esep-backend/internal/entities"
 	"github.com/SanaripEsep/esep-backend/pkg/logging"
+	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
 	"github.com/google/uuid"
 )
 
@@ -37,6 +38,7 @@ func NewService(repo CategoriesRepository, log *logging.Logger) service {
 }
 
 func (s service) Create(ctx context.Context, input CreateInput) (entities.Category, error) {
+	defer telemetry.NewSpan(ctx, telemetry.Name(PackageName+"service.Create")).End()
 	defer s.log.Sync()
 	category := entities.Category{
 		Name:    input.Name,
@@ -57,6 +59,7 @@ func (s service) Create(ctx context.Context, input CreateInput) (entities.Catego
 }
 
 func (s service) ReadBy(ctx context.Context, filters ReadByInput) ([]entities.Category, error) {
+	defer telemetry.NewSpan(ctx, telemetry.Name(PackageName+"service.ReadBy")).End()
 	defer s.log.Sync()
 
 	// validate filters
@@ -117,6 +120,7 @@ func (s service) ReadBy(ctx context.Context, filters ReadByInput) ([]entities.Ca
 }
 
 func (s service) Update(ctx context.Context, changeset UpdateInput) (entities.Category, error) {
+	defer telemetry.NewSpan(ctx, telemetry.Name(PackageName+"service.Update")).End()
 	defer s.log.Sync()
 
 	// validate changeset
@@ -143,6 +147,7 @@ func (s service) Update(ctx context.Context, changeset UpdateInput) (entities.Ca
 }
 
 func (s service) Delete(ctx context.Context, id string) error {
+	defer telemetry.NewSpan(ctx, telemetry.Name(PackageName+"service.Delete")).End()
 	defer s.log.Sync()
 
 	if err := s.repo.Delete(ctx, id); err != nil {

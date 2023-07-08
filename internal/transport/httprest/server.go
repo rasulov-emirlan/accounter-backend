@@ -4,13 +4,16 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
+
 	"github.com/SanaripEsep/esep-backend/config"
 	"github.com/SanaripEsep/esep-backend/internal/domains"
 	"github.com/SanaripEsep/esep-backend/pkg/health"
 	"github.com/SanaripEsep/esep-backend/pkg/logging"
+	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
 	"github.com/SanaripEsep/esep-backend/pkg/validation"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 var (
@@ -18,20 +21,22 @@ var (
 )
 
 type server struct {
-	srvr *http.Server
+	srvr        *http.Server
+	serviceName string
 }
 
-func NewServer(cfg config.Config) *server {
-	return &server{
+func NewServer(cfg config.Config) server {
+	return server{
 		srvr: &http.Server{
 			Addr:         cfg.Server.Port,
 			ReadTimeout:  cfg.Server.TimeoutRead,
 			WriteTimeout: cfg.Server.TimeoutWrite,
 		},
+		serviceName: cfg.ServiceName,
 	}
 }
 
-func (s *server) Start(log *logging.Logger, doms domains.DomainCombiner) error {
+func (s server) Start(log *logging.Logger, doms domains.DomainCombiner) error {
 	router := echo.New()
 
 	router.Use(middleware.Recover())
@@ -40,11 +45,13 @@ func (s *server) Start(log *logging.Logger, doms domains.DomainCombiner) error {
 	router.Use(middleware.RemoveTrailingSlash())
 	router.Use(middleware.Gzip())
 	router.Use(log.NewEchoMiddleware)
+	router.Use(otelecho.Middleware(s.serviceName))
+	router.HTTPErrorHandler = telemetry.EchoHTTPErrorHandler(router)
 	router.Validator = validation.GetValidator()
 
 	router.Any(
 		"/health*",
-		echo.WrapHandler(health.NewHTTPHandler("esep-backend", nil)),
+		echo.WrapHandler(health.NewHTTPHandler(s.serviceName, nil)),
 	)
 
 	authHandler := AuthHandler{doms.AuthService()}
@@ -81,6 +88,6 @@ func (s *server) Start(log *logging.Logger, doms domains.DomainCombiner) error {
 	return s.srvr.ListenAndServe()
 }
 
-func (s *server) Stop(ctx context.Context) error {
+func (s server) Stop(ctx context.Context) error {
 	return s.srvr.Shutdown(ctx)
 }

@@ -10,6 +10,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+const PackageName = "internal/storage/postgresql/"
+
 type RepositoryCombiner struct {
 	ownersRepo     ownersRepository
 	storesRepo     storesRepository
@@ -58,6 +60,7 @@ func (r RepositoryCombiner) Categories() categoriesRepository {
 	return r.categoriesRepo
 }
 
-func (r RepositoryCombiner) Close() {
+func (r RepositoryCombiner) Close(ctx context.Context) error {
 	r.ownersRepo.conn.Close()
+	return nil
 }

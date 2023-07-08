@@ -3,6 +3,8 @@ package categories
 import "errors"
 
 const (
+	PackageName = "internal/domains/categories/"
+
 	// Sorting
 	SortByCreatedAt = "createdAt"
 	SortByArticle   = "article"
