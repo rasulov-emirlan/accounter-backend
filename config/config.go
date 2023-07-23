@@ -30,9 +30,9 @@ type (
 	Config struct {
 		Server      server
 		LogLevel    string `env:"LOG_LEVEL" env-default:"debug"`
-		ServiceName string `env:"SERVICE_NAME" env-default:"esep-backend"`
+		ServiceName string `env:"SERVICE_NAME" env-default:"accounter-backend"`
 		JWTsecret   string `env:"JWT_SECRET" env-default:"supersecret"`
-		DatabaseURL string `env:"DATABASE_URL" env-default:"postgres://postgres:postgres@localhost:5432/esep?sslmode=disable"`
+		DatabaseURL string `env:"DATABASE_URL" env-default:"postgres://postgres:postgres@localhost:5432/accounter?sslmode=disable"`
 		JeagerURL   string `env:"JAEGER_URL" env-default:"http://localhost:14268/api/traces"`
 		Flags       flags
 

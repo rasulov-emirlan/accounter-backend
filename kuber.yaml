@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: esep-backend
-  namespace: esep
+  name: accounter-backend
+  namespace: accounter
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: esep-backend
+      app: accounter-backend
   template:
     metadata:
       labels:
-        app: esep-backend
+        app: accounter-backend
     spec:
       containers:
-      - name: esep-backend
-        image: esep-backend:latest
+      - name: accounter-backend
+        image: accounter-backend:latest
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 8080
@@ -40,12 +40,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: esep-backend
-  namespace: esep
+  name: accounter-backend
+  namespace: accounter
 spec:
   type: NodePort
   selector:
-    app: esep-backend
+    app: accounter-backend
   ports:
   - port: 8080
     targetPort: 8080
