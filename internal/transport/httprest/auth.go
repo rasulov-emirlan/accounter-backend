@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/SanaripEsep/esep-backend/internal/domains/auth"
 	"github.com/labstack/echo/v4"
+	"github.com/rasulov-emirlan/accounter-backend/internal/domains/auth"
 )
 
 const (

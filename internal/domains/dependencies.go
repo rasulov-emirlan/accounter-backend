@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/SanaripEsep/esep-backend/internal/domains/auth"
-	"github.com/SanaripEsep/esep-backend/internal/domains/categories"
-	"github.com/SanaripEsep/esep-backend/internal/domains/stores"
-	"github.com/SanaripEsep/esep-backend/pkg/logging"
-	"github.com/SanaripEsep/esep-backend/pkg/validation"
+	"github.com/rasulov-emirlan/accounter-backend/internal/domains/auth"
+	"github.com/rasulov-emirlan/accounter-backend/internal/domains/categories"
+	"github.com/rasulov-emirlan/accounter-backend/internal/domains/stores"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/logging"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/validation"
 )
 
 type CommonDependencies struct {

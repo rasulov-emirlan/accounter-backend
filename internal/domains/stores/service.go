@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/SanaripEsep/esep-backend/internal/entities"
-	"github.com/SanaripEsep/esep-backend/pkg/logging"
-	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
 	"github.com/google/uuid"
+	"github.com/rasulov-emirlan/accounter-backend/internal/entities"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/logging"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/telemetry"
 )
 
 type (

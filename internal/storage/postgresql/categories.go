@@ -4,11 +4,11 @@ import (
 	"context"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/SanaripEsep/esep-backend/internal/domains/categories"
-	"github.com/SanaripEsep/esep-backend/internal/entities"
-	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rasulov-emirlan/accounter-backend/internal/domains/categories"
+	"github.com/rasulov-emirlan/accounter-backend/internal/entities"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/telemetry"
 )
 
 type categoriesRepository struct {

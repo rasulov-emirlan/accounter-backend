@@ -12,11 +12,11 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/SanaripEsep/esep-backend/config"
-	"github.com/SanaripEsep/esep-backend/pkg/shutdown"
+	"github.com/rasulov-emirlan/accounter-backend/config"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/shutdown"
 )
 
-const SpanNamePrefix = "github.com/SanaripEsep/esep-backend/"
+const SpanNamePrefix = "github.com/rasulov-emirlan/accounter-backend/"
 
 func Name(name string) string {
 	return SpanNamePrefix + name

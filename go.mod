@@ -1,4 +1,4 @@
-module github.com/SanaripEsep/esep-backend
+module github.com/rasulov-emirlan/accounter-backend
 
 go 1.19
 

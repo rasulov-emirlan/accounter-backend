@@ -1,42 +1,42 @@
-version: '3.9'
+version: "3.9"
 
 services:
-  esep-db:
+  accounter-db:
     image: postgres:14
-    container_name: esep-db
+    container_name: accounter-db
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DB: esep
+      POSTGRES_DB: accounter
     volumes:
       - ./data:/var/lib/postgresql/data
     ports:
       - 5432:5432
 
-  esep-backend:
+  accounter-backend:
     build: .
     depends_on:
-      - esep-db
+      - accounter-db
     env_file:
       - docker.env
     network_mode: host
-    container_name: esep-backend
+    container_name: accounter-backend
     restart: always
     command: "--migrate --dev"
-  
-  esep-jeager:
+
+  accounter-jeager:
     image: jaegertracing/all-in-one:latest
     network_mode: host
-    container_name: esep-jeager
+    container_name: accounter-jeager
     restart: always
     ports:
       - 16686:16686
       - 14268:14268
 
-  esep-grafana:
+  accounter-grafana:
     image: grafana/grafana:latest
-    container_name: esep-grafana
+    container_name: accounter-grafana
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped

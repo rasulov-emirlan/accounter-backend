@@ -6,14 +6,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/SanaripEsep/esep-backend/config"
-	"github.com/SanaripEsep/esep-backend/internal/domains"
-	"github.com/SanaripEsep/esep-backend/internal/storage/postgresql"
-	"github.com/SanaripEsep/esep-backend/internal/transport/httprest"
-	"github.com/SanaripEsep/esep-backend/pkg/logging"
-	"github.com/SanaripEsep/esep-backend/pkg/shutdown"
-	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
-	"github.com/SanaripEsep/esep-backend/pkg/validation"
+	"github.com/rasulov-emirlan/accounter-backend/config"
+	"github.com/rasulov-emirlan/accounter-backend/internal/domains"
+	"github.com/rasulov-emirlan/accounter-backend/internal/storage/postgresql"
+	"github.com/rasulov-emirlan/accounter-backend/internal/transport/httprest"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/logging"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/shutdown"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/telemetry"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/validation"
 )
 
 func main() {

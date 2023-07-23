@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/SanaripEsep/esep-backend/config"
-	"github.com/SanaripEsep/esep-backend/internal/storage/postgresql/migrations"
-	"github.com/SanaripEsep/esep-backend/pkg/logging"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rasulov-emirlan/accounter-backend/config"
+	"github.com/rasulov-emirlan/accounter-backend/internal/storage/postgresql/migrations"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/logging"
 )
 
 const PackageName = "internal/storage/postgresql/"

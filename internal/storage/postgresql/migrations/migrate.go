@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"embed"
 
-	"github.com/SanaripEsep/esep-backend/pkg/logging"
 	_ "github.com/lib/pq"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/logging"
 
 	"github.com/pressly/goose/v3"
 )

@@ -8,12 +8,12 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 
-	"github.com/SanaripEsep/esep-backend/config"
-	"github.com/SanaripEsep/esep-backend/internal/domains"
-	"github.com/SanaripEsep/esep-backend/pkg/health"
-	"github.com/SanaripEsep/esep-backend/pkg/logging"
-	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
-	"github.com/SanaripEsep/esep-backend/pkg/validation"
+	"github.com/rasulov-emirlan/accounter-backend/config"
+	"github.com/rasulov-emirlan/accounter-backend/internal/domains"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/health"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/logging"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/telemetry"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/validation"
 )
 
 var (

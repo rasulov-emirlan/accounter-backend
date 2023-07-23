@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/SanaripEsep/esep-backend/internal/domains/categories"
 	"github.com/labstack/echo/v4"
+	"github.com/rasulov-emirlan/accounter-backend/internal/domains/categories"
 )
 
 type (

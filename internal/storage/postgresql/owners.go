@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/SanaripEsep/esep-backend/internal/entities"
-	"github.com/SanaripEsep/esep-backend/pkg/telemetry"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rasulov-emirlan/accounter-backend/internal/entities"
+	"github.com/rasulov-emirlan/accounter-backend/pkg/telemetry"
 )
 
 type ownersRepository struct {
