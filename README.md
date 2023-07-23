@@ -1,6 +1,6 @@
-# esep-backend
+# accounter-backend
 
-Backend for the ESEP 2.0
+Backend for the Accounter app.
 
 ## Idea behind this project
 
